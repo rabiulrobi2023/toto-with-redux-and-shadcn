@@ -1,14 +1,15 @@
 import { useAppDispatch } from "@/redux/hooks/hooks";
 import { Button } from "../ui/button";
-import { removeTodo, toggleStatus } from "@/redux/features/todoSlice";
+import { removeTodo, toggleStatus, TTodo } from "@/redux/features/todoSlice";
 
-type TProps = {
-  id: string;
-  title: string;
-  description: string;
-  isCompleted: boolean;
-};
-const TodoCard = ({ id, title, description, isCompleted }: TProps) => {
+
+export const TodoCard = ({
+  id,
+  title,
+  description,
+  isCompleted,
+  priority,
+}:TTodo) => {
   const dispatch = useAppDispatch();
 
   const toggleComplete = () => {
@@ -16,17 +17,34 @@ const TodoCard = ({ id, title, description, isCompleted }: TProps) => {
   };
 
   return (
-    <div className="flex justify-between p-3 bg-white rounded-sm border-[2px]">
-      <input onChange={toggleComplete} type="checkbox" id="checkbox" checked={isCompleted}/>
-      <p>{id}</p>
-      <p>{title}</p>
+    <div className="flex justify-between p-3 bg-white rounded-sm border-[2px] ">
+      <input
+        onChange={toggleComplete}
+        type="checkbox"
+        id="checkbox"
+        checked={isCompleted}
+        className="mr-5"
+      />
+      <p className="flex flex-1 items-center max-w-max mr-5">{id}</p>
+      <p className="flex flex-1 text-left items-center">{title}</p>
+      <div className="flex items-center gap-2 flex-1">
+        <div
+          className={`size-4 rounded-full ${
+            priority === "High" ? "bg-red-500" : null
+          }
+            ${priority === "Medium" ? "bg-yellow-500" : null}
+            ${priority === "Low" ? "bg-green-500" : null}
+          `}
+        ></div>
+        <p className="flex-1">{priority}</p>
+      </div>
       {isCompleted ? (
-        <p className="text-green-600">Complete</p>
+        <p className="text-green-600 flex flex-1 items-center">Complete</p>
       ) : (
-        <p className="text-red-600">Pending</p>
+        <p className="text-red-600  flex flex-1 items-center ">Pending</p>
       )}
 
-      <p>{description}</p>
+      <p className="flex flex-2 items-center">{description}</p>
       <div className="space-x-5">
         <Button
           onClick={() => dispatch(removeTodo(id))}
