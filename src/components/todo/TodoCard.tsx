@@ -1,20 +1,46 @@
-import { useAppDispatch } from "@/redux/hooks/hooks";
 import { Button } from "../ui/button";
-import { removeTodo, toggleStatus, TTodo } from "@/redux/features/todoSlice";
+import { TTodo } from "@/redux/features/todoSlice";
+import { useDeleteTodoMutation, useUpdateTodoMutation } from "@/redux/api/api";
 
-
+type TTogglePayload = {
+  id: number;
+  data: {
+    isCompleted: boolean;
+  };
+};
 export const TodoCard = ({
   id,
   title,
   description,
   isCompleted,
   priority,
-}:TTodo) => {
-  const dispatch = useAppDispatch();
+}: TTodo) => {
+  //***********Update by Local State */
+  // const dispatch = useAppDispatch();
+  // const toggleComplete = () => {
+  //   dispatch(toggleStatus(id));
+  // };
+
+  //**********Updta by Server */
+
+  const [updateTodo] = useUpdateTodoMutation();
+
+  const [deleteTodo] = useDeleteTodoMutation();
 
   const toggleComplete = () => {
-    dispatch(toggleStatus(id));
+    const payload: TTogglePayload = {
+      id,
+      data: {
+        isCompleted: !isCompleted,
+      },
+    };
+    console.log(payload);
+    updateTodo(payload);
   };
+
+  // const handleDeleteTodo = () => {
+  //   deleteTodo(id);
+  // };
 
   return (
     <div className="flex justify-between p-3 bg-white rounded-sm border-[2px] ">
@@ -30,10 +56,10 @@ export const TodoCard = ({
       <div className="flex items-center gap-2 flex-1">
         <div
           className={`size-4 rounded-full ${
-            priority === "High" ? "bg-red-500" : null
+            priority === "high" ? "bg-red-500" : null
           }
-            ${priority === "Medium" ? "bg-yellow-500" : null}
-            ${priority === "Low" ? "bg-green-500" : null}
+            ${priority === "medium" ? "bg-yellow-500" : null}
+            ${priority === "low" ? "bg-green-500" : null}
           `}
         ></div>
         <p className="flex-1">{priority}</p>
@@ -47,7 +73,7 @@ export const TodoCard = ({
       <p className="flex flex-2 items-center">{description}</p>
       <div className="space-x-5">
         <Button
-          onClick={() => dispatch(removeTodo(id))}
+          onClick={() => deleteTodo(id)}
           className="text-red-500 bg-white hover:bg-white hover:text-red-700"
         >
           <svg
